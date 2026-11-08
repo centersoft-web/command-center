@@ -106,6 +106,16 @@
                     <button onclick="salvarToken()" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm">Conectar</button>
                 </div>
 
+                <details class="w-full sm:w-auto text-xs text-slate-200 bg-slate-800/90 border border-slate-700 rounded-lg px-3 py-2">
+                    <summary class="cursor-pointer font-bold text-brand-100">Como obter a chave da brapi?</summary>
+                    <ol class="mt-2 space-y-1 list-decimal list-inside text-slate-300">
+                        <li>Acesse <a href="https://brapi.dev/login" target="_blank" rel="noopener" class="text-sky-300 underline hover:text-sky-200">brapi.dev/login</a>.</li>
+                        <li>Crie uma conta ou entre.</li>
+                        <li>No dashboard, copie sua chave de API.</li>
+                        <li>Cole a chave no campo <strong>API KEY (Brapi)</strong> e clique em <strong>Conectar</strong>.</li>
+                    </ol>
+                </details>
+
                 <button onclick="sincronizarDadosMestres(true)" id="btn-sync-master" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1.5">
                     <i class="fa-solid fa-rotate" id="sync-icon-master"></i> Atualizar LPA/VPA
                 </button>
