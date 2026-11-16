@@ -15,16 +15,16 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'Montserrat', sans-serif; 
-            background: var(--bg-deep); 
-            display: flex; height: 100vh; color: white; overflow: hidden; 
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-deep);
+            display: flex; height: 100vh; color: white; overflow: hidden;
         }
 
         .fundo-background {
             position: fixed; inset: 0;
-            background-image: linear-gradient(135deg, rgba(6, 11, 26, 0.95) 0%, rgba(10, 25, 47, 0.88) 100%), 
+            background-image: linear-gradient(135deg, rgba(6, 11, 26, 0.95) 0%, rgba(10, 25, 47, 0.88) 100%),
                               url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop');
             background-size: cover; background-position: center; z-index: -1;
         }
@@ -32,18 +32,18 @@
         .titulo-master {
             font-family: 'Cinzel', serif;
             font-size: 2.2rem;
-            font-weight: 700; 
+            font-weight: 700;
             letter-spacing: 0.15em;
             text-transform: uppercase;
             background: linear-gradient(180deg, #ffffff 30%, #a1a1a1 100%);
-            -webkit-background-clip: text; 
+            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0px 3px 10px rgba(0,0,0,0.6));
             margin-bottom: 5px;
         }
 
         .subtitulo-master {
-            letter-spacing: 0.5em; 
+            letter-spacing: 0.5em;
             font-size: 0.55rem;
             color: var(--accent);
             text-transform: uppercase;
@@ -56,21 +56,21 @@
         }
 
         .glass-card {
-            background: rgba(10, 20, 40, 0.7); 
+            background: rgba(10, 20, 40, 0.7);
             padding: 35px; border-radius: 2px;
-            border: 1px solid rgba(255,255,255,0.05); text-align: center; 
+            border: 1px solid rgba(255,255,255,0.05); text-align: center;
             width: 320px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
         }
 
-        .sidebar { 
-            width: 60px; 
-            background: rgba(5, 10, 25, 0.92); 
-            border-right: 1px solid var(--border); display: flex; 
+        .sidebar {
+            width: 60px;
+            background: rgba(5, 10, 25, 0.92);
+            border-right: 1px solid var(--border); display: flex;
             flex-direction: column; align-items: center; padding: 20px 0; z-index: 100;
         }
         .sidebar.locked .nav-item:not(.special-btn) { opacity: 0.05; pointer-events: none; }
 
-        .logo-btn { 
+        .logo-btn {
             font-family: 'Cinzel', serif;
             width: 32px; height: 32px;
             border: 1px solid var(--accent);
@@ -79,12 +79,12 @@
             font-size: 0.8rem;
         }
 
-        .nav-item { 
+        .nav-item {
             width: 42px; height: 42px;
-            color: #64748b; cursor: pointer; 
-            margin-bottom: 12px; border: none; background: transparent; 
+            color: #64748b; cursor: pointer;
+            margin-bottom: 12px; border: none; background: transparent;
             display: flex; align-items: center; justify-content: center; transition: 0.3s;
-            font-size: 20px; 
+            font-size: 20px;
         }
         .nav-item:hover { color: var(--accent); }
         .nav-item.active { color: var(--accent); border-left: 2px solid var(--accent); }
@@ -95,7 +95,7 @@
             width: 100%; text-align: center; outline: none; font-size: 0.8rem;
         }
         button.primary-btn {
-            background: transparent; color: var(--accent); border: 1px solid var(--accent); 
+            background: transparent; color: var(--accent); border: 1px solid var(--accent);
             padding: 10px; cursor: pointer; font-weight: 600; width: 100%;
             text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem;
             font-family: 'Cinzel', serif;
@@ -140,16 +140,25 @@
 </div>
 
 <div id="config-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000;">
-    <div class="glass-card" style="width: 300px; border: 1px solid var(--accent);">
+    <div class="glass-card" style="width: 300px; border: 1px solid var(--accent); max-height: 92vh; overflow-y: auto;">
         <h3 style="font-family: 'Cinzel'; margin-bottom: 20px; font-size: 0.9rem;">Segurança</h3>
         <input type="password" id="senhaAtual" placeholder="Senha Atual">
         <input type="password" id="senhaNova" placeholder="Nova Senha">
         <button class="primary-btn" onclick="salvarNovaSenha()">Gravar</button>
-        <button class="primary-btn" onclick="abrirAvisoBackupPelasConfiguracoes()" style="margin-top: 10px; border-color: rgba(212, 175, 55, 0.55); font-size: 0.65rem;">
-            ⚠️ Política de Uso e Backup
+        <button class="primary-btn" onclick="backupCompleto()" style="margin-top: 10px; border-color: #4dafff; color: #6bc4ff; font-size: 0.65rem;">
+            📥 Backup Completo
+        </button>
+        <button class="primary-btn" onclick="abrirRestauracaoCompleta()" style="margin-top: 10px; border-color: #b8b8b8; color: #ddd; font-size: 0.65rem;">
+            📤 Restaurar Completo
         </button>
         <button class="primary-btn" onclick="limparTodosOsDados()" style="margin-top: 10px; border-color: #ff4d4d; color: #ff6b6b; font-size: 0.65rem;">
             🗑️ Limpar Dados por Módulo
+        </button>
+        <button class="primary-btn" onclick="resetTotal()" style="margin-top: 10px; border-color: #ff0000; color: #ff0000; font-size: 0.6rem; background: rgba(255,0,0,0.08);">
+            🚨 RESET TOTAL (APAGAR TUDO)
+        </button>
+        <button class="primary-btn" onclick="abrirAvisoBackupPelasConfiguracoes()" style="margin-top: 10px; border-color: rgba(212, 175, 55, 0.55); font-size: 0.65rem;">
+            ⚠️ Política de Uso e Backup
         </button>
         <button class="primary-btn" onclick="fecharConfig()" style="border-color: #444; color: #888; margin-top: 10px;">Voltar</button>
     </div>
@@ -202,7 +211,7 @@
     <button class="nav-item" title="Cartões & Parcelas" onclick="openModule('Gestão de Cartões.html', this)">💳</button>
     <button class="nav-item" title="Quantum Trade" onclick="openModule('Quantum Trade.html', this)">📈</button>
     <button class="nav-item" title="Frota" onclick="openModule('FleetManager PRO.html', this)">🚗</button>
-    
+
     <div style="margin-top: auto;">
         <button class="nav-item special-btn" title="Configurações" aria-label="Configurações" onclick="abrirConfig()">⚙️</button>
         <button class="nav-item special-btn" title="Bloquear" aria-label="Bloquear" onclick="fazerLogout()">🔒</button>
@@ -221,7 +230,7 @@
 <div id="backup-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px);">
     <div class="glass-card" style="width: 480px; max-width: 90%; border: 1px solid var(--accent); text-align: left; padding: 30px;">
         <h3 style="font-family: 'Cinzel'; margin-bottom: 15px; font-size: 1.1rem; color: var(--accent); text-align: center;">POLÍTICA DE USO & BACKUP DE DADOS</h3>
-        
+
         <div style="font-size: 0.8rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
             <p style="margin-bottom: 12px;">
                 <strong>1. Armazenamento Local:</strong><br>
@@ -244,23 +253,10 @@
 </div>
 
 <script>
-    // A senha padrão continua sendo 123456 conforme seu arquivo original
     let SENHA_MESTRE = localStorage.getItem('senhaMaster') !== null ? localStorage.getItem('senhaMaster') : "";
 
     /* ═══════════════════════════════════════════════════════════════
      * ESCOPO DE DADOS POR MÓDULO (whitelist seletiva)
-     *
-     * Cada módulo tem seu próprio bloco. Ao limpar, o usuário escolhe
-     * quais blocos apagar. SOMENTE as chaves/prefixos/bancos do módulo
-     * selecionado são removidos.
-     *
-     * COMO COMPLETAR (uma vez por módulo):
-     *   1. Abra o módulo pelo index.html.
-     *   2. Use-o: cadastre, edite, exclua, exporte, reimporte.
-     *   3. F12 → Console → auditarEscopo()
-     *   4. Se aparecer chave/banco "não mapeado" que pertence a este
-     *      módulo, adicione no bloco correspondente abaixo.
-     *   5. Repita nos 9 módulos.
      * ═══════════════════════════════════════════════════════════════ */
     const ESCOPO_DADOS = {
         sistema: {
@@ -327,8 +323,6 @@
 
     /* ═══════════════════════════════════════════════════════════════
      * AUDITORIA DE ESCOPO
-     * Rode no console (F12) com cada módulo aberto para descobrir
-     * quais chaves ainda não estão mapeadas para nenhum módulo.
      * ═══════════════════════════════════════════════════════════════ */
     function auditarEscopo() {
         const todas = Object.keys(localStorage);
@@ -354,10 +348,6 @@
         if (mapeadas.length) console.table(mapeadas);
         else console.log('✅ Nenhuma chave mapeada ainda (normal se o sistema está vazio).');
         console.log('⚠️ Não mapeadas (NÃO serão apagadas por nenhum módulo):', naoMapeadas);
-        console.log('');
-        console.log('Para cada chave em ⚠️ que seja do Command Center, adicione-a');
-        console.log('no bloco do módulo correspondente (ESCOPO_DADOS.<modulo>.chaves)');
-        console.log('ou em prefixos (para chaves dinâmicas tipo "x_123").');
 
         if (window.indexedDB && typeof indexedDB.databases === 'function') {
             indexedDB.databases().then(bancos => {
@@ -451,14 +441,7 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════
-     * LIMPEZA SELETIVA POR MÓDULO
-     *
-     * - Apaga SOMENTE as chaves dos módulos marcados no checklist.
-     * - Preserva dados de outros apps (mesmo em file://).
-     * - Sites externos (Gmail, bancos...) são inatingíveis por origem.
-     * - Aguarda o iframe descarregar antes de mexer no IndexedDB.
-     * - Relata falhas parciais item a item (allSettled).
-     * - A importação posterior continua funcionando normalmente.
+     * LIMPEZA SELETIVA POR MÓDULO (mantida como estava)
      * ═══════════════════════════════════════════════════════════════ */
     async function limparTodosOsDados() {
         fecharConfig();
@@ -468,7 +451,6 @@
             return;
         }
 
-        // 1) Coleta seleção do checklist
         const marcados = [...document.querySelectorAll(
             '#lista-modulos-limpeza input[type="checkbox"]:checked'
         )].map(cb => cb.value);
@@ -479,7 +461,6 @@
             return;
         }
 
-        // 2) Confirmação por texto, listando os módulos marcados
         const rotulos = marcados.map(id => (ESCOPO_DADOS[id] && ESCOPO_DADOS[id].rotulo) || id);
         const confirmacao = prompt(
             'CONFIRMAÇÃO FINAL\n\nPara excluir definitivamente os dados do(s) módulo(s):\n\n' +
@@ -493,7 +474,6 @@
 
         const falhas = [];
 
-        // 3) Fecha o iframe e espera o unload (libera conexões do IndexedDB)
         try {
             const frame = document.getElementById('content-frame');
             if (frame && frame.style.display !== 'none' && frame.src && frame.src !== 'about:blank') {
@@ -508,7 +488,6 @@
             falhas.push('fechamento do iframe: ' + e.message);
         }
 
-        // 4) Monta as listas a partir apenas dos módulos marcados
         const chavesSel = new Set();
         const prefixosSel = new Set();
         const bancosSel = new Set();
@@ -524,7 +503,6 @@
         const prefixosArr = [...prefixosSel];
         const bancosArr = [...bancosSel];
 
-        // 5) Remove do localStorage / sessionStorage — SÓ chaves do escopo marcado
         try {
             Object.keys(localStorage).forEach(k => {
                 if (chavesSel.has(k) || prefixosArr.some(p => k.startsWith(p))) {
@@ -542,7 +520,6 @@
             falhas.push('Web Storage: ' + e.message);
         }
 
-        // 6) IndexedDB — SÓ bancos dos módulos marcados
         if (bancosArr.length && window.indexedDB) {
             const resultados = await Promise.allSettled(
                 bancosArr.map(nome => new Promise((resolve, reject) => {
@@ -559,7 +536,6 @@
             });
         }
 
-        // 7) Cache Storage / Service Workers (regeneráveis, limpos sempre)
         if ('caches' in window) {
             try {
                 const chaves = await caches.keys();
@@ -573,10 +549,8 @@
             } catch (e) { falhas.push('Service Workers: ' + e.message); }
         }
 
-        // 8) Se o módulo 'sistema' foi apagado, zera a senha em memória
         if (marcados.includes('sistema')) SENHA_MESTRE = '';
 
-        // 9) Auditoria pós-limpeza: sobrou algo do escopo marcado?
         const residuais = Object.keys(localStorage).filter(k =>
             chavesSel.has(k) || prefixosArr.some(p => k.startsWith(p))
         );
@@ -584,7 +558,6 @@
             falhas.push('resíduos no localStorage: ' + residuais.join(', '));
         }
 
-        // 10) Relatório
         if (falhas.length) {
             alert(
                 '⚠️ Limpeza PARCIAL nos módulos:\n- ' + rotulos.join('\n- ') +
@@ -604,21 +577,20 @@
     function salvarNovaSenha() {
         if (document.getElementById('senhaAtual').value === SENHA_MESTRE) {
             let nova = document.getElementById('senhaNova').value;
-            // Se deixar em branco, a senha passa a ser vazia (nenhuma)
             SENHA_MESTRE = nova;
             localStorage.setItem('senhaMaster', nova);
-            
+
             if (nova === "") {
                 alert("Senha removida com sucesso! Agora o acesso é direto.");
             } else {
                 alert("Senha alterada com sucesso!");
             }
-            
+
             fecharConfig();
             document.getElementById('senhaAtual').value = '';
             document.getElementById('senhaNova').value = '';
-        } else { 
-            alert("Senha atual incorreta."); 
+        } else {
+            alert("Senha atual incorreta.");
         }
     }
 
@@ -646,6 +618,610 @@
     function fecharAvisoBackup() {
         document.getElementById('backup-modal').style.display = 'none';
         abrirConfig();
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * FECHAR IFRAME ANTES DE OPERAR (libera conexões IDB)
+     * ═══════════════════════════════════════════════════════════════ */
+    async function _fecharIframe() {
+        try {
+            const frame = document.getElementById('content-frame');
+            if (frame && frame.style.display !== 'none' && frame.src && frame.src !== 'about:blank') {
+                await new Promise(resolve => {
+                    frame.addEventListener('load', () => resolve(), { once: true });
+                    frame.src = 'about:blank';
+                    setTimeout(resolve, 1500);
+                });
+            }
+            goHome();
+        } catch (e) { /* segue em frente */ }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * UTILITÁRIOS GERAIS
+     * ═══════════════════════════════════════════════════════════════ */
+
+    function _coletarTudoLocalStorage() {
+        const tudo = {};
+        Object.keys(localStorage).forEach(k => {
+            tudo[k] = localStorage.getItem(k);
+        });
+        return tudo;
+    }
+
+    function _baixarJSON(obj, nomeArquivo) {
+        const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nomeArquivo;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    function _timestampArquivo() {
+        return new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * INDEXEDDB — EXPORTAÇÃO
+     * ═══════════════════════════════════════════════════════════════ */
+    async function _coletarTodoIndexedDB() {
+        if (!window.indexedDB) return { _aviso: 'IndexedDB não disponível' };
+        if (typeof indexedDB.databases !== 'function') {
+            return { _aviso: 'indexedDB.databases() não suportado neste navegador' };
+        }
+
+        let bancos = [];
+        try {
+            bancos = await indexedDB.databases();
+        } catch (e) {
+            return { _aviso: 'Falha ao enumerar bancos: ' + e.message };
+        }
+
+        const resultado = {};
+        for (const info of bancos) {
+            if (!info || !info.name) continue;
+            try {
+                resultado[info.name] = await _exportarBancoIDB(info.name);
+            } catch (e) {
+                resultado[info.name] = { _erro: e.message };
+            }
+        }
+        return resultado;
+    }
+
+    async function _exportarBancoIDB(nome) {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(nome);
+
+            req.onerror = () => reject(req.error || new Error('open falhou'));
+            req.onblocked = () => reject(new Error('bloqueado por outra aba'));
+            req.onsuccess = async () => {
+                const db = req.result;
+                const exportado = { version: db.version, stores: {} };
+
+                try {
+                    const nomes = Array.from(db.objectStoreNames);
+                    for (const storeName of nomes) {
+                        exportado.stores[storeName] = await _exportarStoreIDB(db, storeName);
+                    }
+                    db.close();
+                    resolve(exportado);
+                } catch (e) {
+                    try { db.close(); } catch (_) {}
+                    reject(e);
+                }
+            };
+        });
+    }
+
+    async function _exportarStoreIDB(db, storeName) {
+        return new Promise((resolve, reject) => {
+            let tx;
+            try {
+                tx = db.transaction(storeName, 'readonly');
+            } catch (e) {
+                reject(e); return;
+            }
+
+            const store = tx.objectStore(storeName);
+
+            const indexes = {};
+            Array.from(store.indexNames).forEach(idxName => {
+                const idx = store.index(idxName);
+                indexes[idxName] = {
+                    keyPath: idx.keyPath,
+                    unique: !!idx.unique,
+                    multiEntry: !!idx.multiEntry
+                };
+            });
+
+            const reqVal = store.getAll();
+            const reqKey = store.getAllKeys();
+
+            let values = null, keys = null;
+
+            function tentar() {
+                if (values === null || keys === null) return;
+                const records = [];
+                for (let i = 0; i < values.length; i++) {
+                    records.push({ key: keys[i], value: values[i] });
+                }
+                resolve({
+                    keyPath: store.keyPath,
+                    autoIncrement: !!store.autoIncrement,
+                    indexes: indexes,
+                    records: records
+                });
+            }
+
+            reqVal.onsuccess = () => { values = reqVal.result; tentar(); };
+            reqKey.onsuccess = () => { keys = reqKey.result; tentar(); };
+            reqVal.onerror = () => reject(reqVal.error || new Error('getAll falhou'));
+            reqKey.onerror = () => reject(reqKey.error || new Error('getAllKeys falhou'));
+        });
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * INDEXEDDB — RESTAURAÇÃO
+     * ═══════════════════════════════════════════════════════════════ */
+    async function _restaurarIndexedDB(backupIDB) {
+        const relatorio = {
+            bancosTotal: 0,
+            bancosOk: 0,
+            registrosTotal: 0,
+            falhas: []
+        };
+
+        if (!backupIDB || typeof backupIDB !== 'object') return relatorio;
+        if (backupIDB._aviso) {
+            relatorio.falhas.push('Aviso do backup: ' + backupIDB._aviso);
+            return relatorio;
+        }
+
+        const nomes = Object.keys(backupIDB).filter(n => !n.startsWith('_'));
+        relatorio.bancosTotal = nomes.length;
+
+        for (const nome of nomes) {
+            const dadosBanco = backupIDB[nome];
+            if (!dadosBanco || dadosBanco._erro) {
+                relatorio.falhas.push(nome + ': ' + ((dadosBanco && dadosBanco._erro) || 'dados ausentes'));
+                continue;
+            }
+            try {
+                const count = await _recriarBancoIDB(nome, dadosBanco);
+                relatorio.bancosOk++;
+                relatorio.registrosTotal += count;
+            } catch (e) {
+                relatorio.falhas.push(nome + ': ' + e.message);
+            }
+        }
+
+        return relatorio;
+    }
+
+    async function _recriarBancoIDB(nome, dadosBanco) {
+        await new Promise(resolve => {
+            const req = indexedDB.deleteDatabase(nome);
+            req.onsuccess = () => resolve();
+            req.onerror = () => resolve();
+            req.onblocked = () => resolve();
+        });
+
+        const version = dadosBanco.version || 1;
+        const stores = dadosBanco.stores || {};
+
+        let registrosGravados = 0;
+
+        await new Promise((resolve, reject) => {
+            const req = indexedDB.open(nome, version);
+
+            req.onerror = () => reject(req.error || new Error('open falhou'));
+            req.onblocked = () => reject(new Error('bloqueado por outra aba'));
+
+            req.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                for (const [storeName, storeDef] of Object.entries(stores)) {
+                    const opts = {};
+                    if (storeDef.keyPath !== null && storeDef.keyPath !== undefined) {
+                        opts.keyPath = storeDef.keyPath;
+                    }
+                    if (storeDef.autoIncrement) {
+                        opts.autoIncrement = true;
+                    }
+                    const store = db.createObjectStore(storeName, opts);
+
+                    for (const [idxName, idxDef] of Object.entries(storeDef.indexes || {})) {
+                        store.createIndex(idxName, idxDef.keyPath, {
+                            unique: !!idxDef.unique,
+                            multiEntry: !!idxDef.multiEntry
+                        });
+                    }
+                }
+            };
+
+            req.onsuccess = async () => {
+                const db = req.result;
+
+                try {
+                    for (const [storeName, storeDef] of Object.entries(stores)) {
+                        const records = storeDef.records || [];
+                        if (!records.length) continue;
+
+                        const temKeyPath = storeDef.keyPath !== null && storeDef.keyPath !== undefined;
+
+                        const tx = db.transaction(storeName, 'readwrite');
+                        const store = tx.objectStore(storeName);
+
+                        for (const rec of records) {
+                            try {
+                                if (temKeyPath) {
+                                    store.put(rec.value);
+                                } else {
+                                    store.put(rec.value, rec.key);
+                                }
+                                registrosGravados++;
+                            } catch (e) {
+                                // tx contabiliza no final
+                            }
+                        }
+
+                        await new Promise((res, rej) => {
+                            tx.oncomplete = () => res();
+                            tx.onerror = () => rej(tx.error);
+                            tx.onabort = () => rej(tx.error || new Error('transação abortada'));
+                        });
+                    }
+                    db.close();
+                    resolve();
+                } catch (e) {
+                    try { db.close(); } catch (_) {}
+                    reject(e);
+                }
+            };
+        });
+
+        return registrosGravados;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * BACKUP COMPLETO — localStorage + IndexedDB
+     * ═══════════════════════════════════════════════════════════════ */
+    async function backupCompleto() {
+        fecharConfig();
+
+        await _fecharIframe();
+
+        const ls = _coletarTudoLocalStorage();
+        const idb = await _coletarTodoIndexedDB();
+
+        const totalLS = Object.keys(ls).length;
+        const nomesIDB = Object.keys(idb).filter(n => !n.startsWith('_'));
+        let totalRegistrosIDB = 0;
+        nomesIDB.forEach(n => {
+            const b = idb[n];
+            if (b && b.stores) {
+                Object.values(b.stores).forEach(s => {
+                    totalRegistrosIDB += (s.records || []).length;
+                });
+            }
+        });
+
+        if (totalLS === 0 && nomesIDB.length === 0) {
+            alert(
+                '⚠️ Nenhum dado encontrado no navegador para backup.\n\n' +
+                'Todos os módulos estão vazios ou ainda não salvaram nada.'
+            );
+            abrirConfig();
+            return;
+        }
+
+        const backup = {
+            app: 'Command Center',
+            versao: '3.0',
+            geradoEm: new Date().toISOString(),
+            tipo: 'completo',
+            dados: ls,
+            indexedDB: idb,
+            modulosIncluidos: [],
+            dadosPorModulo: { _todos: ls }
+        };
+
+        const nomeArquivo = 'command-center-backup-completo-' + _timestampArquivo() + '.json';
+        _baixarJSON(backup, nomeArquivo);
+
+        let msg =
+            '✅ Backup completo gerado!\n\n' +
+            '📦 localStorage: ' + totalLS + ' chave(s)\n' +
+            '🗄️ IndexedDB: ' + nomesIDB.length + ' banco(s), ' + totalRegistrosIDB + ' registro(s)\n' +
+            '📄 Arquivo: ' + nomeArquivo + '\n' +
+            '📁 Salvo na pasta de Downloads.';
+
+        if (idb._aviso) {
+            msg += '\n\n⚠️ IndexedDB: ' + idb._aviso +
+                   '\n\nOs dados em localStorage foram exportados normalmente.';
+        }
+
+        alert(msg);
+        abrirConfig();
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * LEITURA E VALIDAÇÃO DE ARQUIVO DE BACKUP
+     * Aceita Command Center e Management Center (compatibilidade)
+     * ═══════════════════════════════════════════════════════════════ */
+    async function _lerArquivoBackup() {
+        return new Promise(resolve => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json,application/json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) { resolve(null); return; }
+                try {
+                    const backup = JSON.parse(await file.text());
+
+                    const appOk = backup.app === 'Command Center' || backup.app === 'Management Center';
+                    if (!appOk) {
+                        alert('❌ Arquivo inválido. Não é um backup do Command/Management Center.');
+                        resolve(null); return;
+                    }
+
+                    const temLS = (backup.dados && Object.keys(backup.dados).length > 0);
+                    const temModulos = (backup.dadosPorModulo && Object.keys(backup.dadosPorModulo).length > 0);
+                    const temIDB = (backup.indexedDB && Object.keys(backup.indexedDB).filter(k => !k.startsWith('_')).length > 0);
+
+                    if (!temLS && !temModulos && !temIDB) {
+                        alert('❌ O arquivo não contém dados para restaurar.');
+                        resolve(null); return;
+                    }
+
+                    resolve({ backup, nomeArquivo: file.name });
+                } catch (err) {
+                    alert('❌ Erro ao ler o arquivo:\n' + err.message);
+                    resolve(null);
+                }
+            };
+            input.click();
+        });
+    }
+
+    function _achatarBackup(backup) {
+        const plano = {};
+
+        if (backup.dados && Object.keys(backup.dados).length > 0) {
+            Object.entries(backup.dados).forEach(([k, v]) => {
+                plano[k] = v;
+            });
+        } else if (backup.dadosPorModulo) {
+            Object.values(backup.dadosPorModulo).forEach(dadosModulo => {
+                Object.entries(dadosModulo || {}).forEach(([k, v]) => {
+                    plano[k] = v;
+                });
+            });
+        }
+
+        return plano;
+    }
+
+    async function _oferecerBackupPrevio() {
+        const fazerBackup = confirm(
+            '💾 BACKUP DE SEGURANÇA\n\n' +
+            'Deseja baixar um backup do estado ATUAL antes de restaurar?\n\n' +
+            '✅ OK = baixar backup do estado atual e depois restaurar\n' +
+            '❌ Cancelar = restaurar sem fazer backup\n\n' +
+            'Recomendado! Se algo der errado, o backup é sua única forma de voltar.'
+        );
+
+        if (!fazerBackup) return;
+
+        await _fecharIframe();
+
+        const ls = _coletarTudoLocalStorage();
+        const idb = await _coletarTodoIndexedDB();
+
+        const totalLS = Object.keys(ls).length;
+        const nomesIDB = Object.keys(idb).filter(n => !n.startsWith('_'));
+
+        if (totalLS === 0 && nomesIDB.length === 0) {
+            alert('ℹ️ O sistema está vazio — não há nada para salvar.\n\nProsseguindo com a restauração.');
+            return;
+        }
+
+        const backup = {
+            app: 'Command Center',
+            versao: '3.0',
+            geradoEm: new Date().toISOString(),
+            tipo: 'pre-restauracao',
+            dados: ls,
+            indexedDB: idb,
+            modulosIncluidos: [],
+            dadosPorModulo: { _todos: ls }
+        };
+
+        const nomeArquivo = 'command-center-backup-pre-restauracao-' + _timestampArquivo() + '.json';
+        _baixarJSON(backup, nomeArquivo);
+
+        await new Promise(r => setTimeout(r, 800));
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * RESTAURAÇÃO COMPLETA — localStorage + IndexedDB
+     * ═══════════════════════════════════════════════════════════════ */
+    async function abrirRestauracaoCompleta() {
+        fecharConfig();
+
+        const resultado = await _lerArquivoBackup();
+        if (!resultado) { abrirConfig(); return; }
+
+        const { backup, nomeArquivo } = resultado;
+        const plano = _achatarBackup(backup);
+        const totalLS = Object.keys(plano).length;
+
+        const idb = backup.indexedDB || null;
+        const nomesIDB = idb ? Object.keys(idb).filter(n => !n.startsWith('_')) : [];
+        let totalRegistrosIDB = 0;
+        nomesIDB.forEach(n => {
+            const b = idb[n];
+            if (b && b.stores) {
+                Object.values(b.stores).forEach(s => {
+                    totalRegistrosIDB += (s.records || []).length;
+                });
+            }
+        });
+
+        const msg =
+            'Restaurar COMPLETAMENTE este backup?\n\n' +
+            '📄 Arquivo: ' + nomeArquivo + '\n' +
+            '📅 Gerado em: ' + new Date(backup.geradoEm).toLocaleString('pt-BR') + '\n' +
+            '📦 localStorage: ' + totalLS + ' chave(s)\n' +
+            '🗄️ IndexedDB: ' + nomesIDB.length + ' banco(s), ' + totalRegistrosIDB + ' registro(s)\n\n' +
+            '⚠️ localStorage: chaves do backup SOBRESCREVEM as atuais (demais são mantidas).\n' +
+            '⚠️ IndexedDB: bancos do backup serão RECRIADOS do zero (conteúdo atual desses bancos é apagado).\n\n' +
+            'Continuar?';
+
+        if (!confirm(msg)) { abrirConfig(); return; }
+
+        await _oferecerBackupPrevio();
+
+        await _fecharIframe();
+
+        // 1) localStorage
+        let lsGravadas = 0;
+        const falhasLS = [];
+        Object.entries(plano).forEach(([k, v]) => {
+            try {
+                localStorage.setItem(k, v);
+                lsGravadas++;
+            } catch (err) {
+                falhasLS.push(k + ': ' + err.message);
+            }
+        });
+
+        // 2) IndexedDB
+        let idbRelatorio = { bancosTotal: 0, bancosOk: 0, registrosTotal: 0, falhas: [] };
+        if (idb && nomesIDB.length > 0) {
+            idbRelatorio = await _restaurarIndexedDB(idb);
+        }
+
+        // 3) Relatório
+        let relatorio =
+            '✅ Restauração completa concluída!\n\n' +
+            '📦 localStorage: ' + lsGravadas + ' de ' + totalLS + ' chave(s) gravada(s)\n' +
+            '🗄️ IndexedDB: ' + idbRelatorio.bancosOk + ' de ' + idbRelatorio.bancosTotal + ' banco(s) restaurado(s)\n' +
+            '   (' + idbRelatorio.registrosTotal + ' registro(s))';
+
+        const todasFalhas = [
+            ...falhasLS.map(f => 'localStorage — ' + f),
+            ...idbRelatorio.falhas.map(f => 'IndexedDB — ' + f)
+        ];
+
+        if (todasFalhas.length) {
+            relatorio +=
+                '\n\n⚠️ ' + todasFalhas.length + ' falha(s):\n- ' +
+                todasFalhas.slice(0, 8).join('\n- ') +
+                (todasFalhas.length > 8 ? '\n- ... e mais ' + (todasFalhas.length - 8) : '');
+        }
+
+        relatorio += '\n\nO sistema será recarregado.';
+        alert(relatorio);
+        location.reload();
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+     * RESET TOTAL — limpa localStorage + IndexedDB + Cache/SW
+     * ═══════════════════════════════════════════════════════════════ */
+    async function resetTotal() {
+        fecharConfig();
+
+        const chaves = Object.keys(localStorage);
+
+        let bancosIDB = [];
+        if (window.indexedDB && typeof indexedDB.databases === 'function') {
+            try {
+                bancosIDB = (await indexedDB.databases()).map(b => b.name).filter(Boolean);
+            } catch (e) { /* silencioso */ }
+        }
+
+        if (!chaves.length && !bancosIDB.length) {
+            alert('Nada a apagar: localStorage e IndexedDB já estão vazios.');
+            abrirConfig();
+            return;
+        }
+
+        const conf1 = confirm(
+            '🚨 RESET TOTAL\n\n' +
+            'Isso vai APAGAR PERMANENTEMENTE:\n' +
+            '  • ' + chaves.length + ' chave(s) do localStorage\n' +
+            '  • ' + bancosIDB.length + ' banco(s) do IndexedDB\n' +
+            '  • Cache e Service Workers\n\n' +
+            'TODOS os dados de TODOS os módulos serão perdidos.\n\n' +
+            '⚠️ Faça backup primeiro!\n\n' +
+            'Continuar?'
+        );
+        if (!conf1) { abrirConfig(); return; }
+
+        const texto = prompt(
+            'Confirmação final: digite exatamente APAGAR TUDO para continuar.\n\n' +
+            '(Ou cancele para abortar)'
+        );
+        if (texto !== 'APAGAR TUDO') {
+            alert('❌ Confirmação inválida. Nada foi apagado.');
+            abrirConfig();
+            return;
+        }
+
+        await _fecharIframe();
+
+        let removidas = 0;
+        const falhas = [];
+        chaves.forEach(k => {
+            try { localStorage.removeItem(k); removidas++; }
+            catch (e) { falhas.push(k + ': ' + e.message); }
+        });
+
+        if (bancosIDB.length && window.indexedDB) {
+            for (const nome of bancosIDB) {
+                await new Promise(res => {
+                    const req = indexedDB.deleteDatabase(nome);
+                    req.onsuccess = () => res();
+                    req.onerror = () => res();
+                    req.onblocked = () => res();
+                });
+            }
+        }
+
+        if ('caches' in window) {
+            try {
+                const cs = await caches.keys();
+                await Promise.allSettled(cs.map(k => caches.delete(k)));
+            } catch (e) { /* silencioso */ }
+        }
+        if ('serviceWorker' in navigator) {
+            try {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                await Promise.allSettled(regs.map(r => r.unregister()));
+            } catch (e) { /* silencioso */ }
+        }
+
+        SENHA_MESTRE = '';
+
+        if (falhas.length) {
+            alert(
+                '⚠️ RESET PARCIAL\n\n' +
+                removidas + ' chaves removidas.\n' +
+                'Falhas:\n- ' + falhas.join('\n- ')
+            );
+        } else {
+            alert(
+                '🚨 RESET CONCLUÍDO\n\n' +
+                '🗑️ ' + removidas + ' chave(s) do localStorage removida(s)\n' +
+                '🗄️ ' + bancosIDB.length + ' banco(s) do IndexedDB apagado(s)\n' +
+                '🧹 Cache e Service Workers limpos\n\n' +
+                'O sistema será recarregado vazio.'
+            );
+            location.reload();
+        }
     }
 
 </script>
