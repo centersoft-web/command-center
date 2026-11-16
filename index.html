@@ -309,6 +309,20 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════
+     * GERADOR DE NOME DE ARQUIVO NO PADRÃO
+     * <Prefixo>_<AAAA>_<DD-MM-AAAA>_<HH>h<MM>.json
+     * ═══════════════════════════════════════════════════════════════ */
+    function _nomeArquivoTimestamp(prefixo) {
+        const agora = new Date();
+        const ano = agora.getFullYear();
+        const dia = String(agora.getDate()).padStart(2, '0');
+        const mes = String(agora.getMonth() + 1).padStart(2, '0');
+        const horas = String(agora.getHours()).padStart(2, '0');
+        const minutos = String(agora.getMinutes()).padStart(2, '0');
+        return `${prefixo}_${ano}_${dia}-${mes}-${ano}_${horas}h${minutos}.json`;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
      * INDEXEDDB — EXPORTAÇÃO
      * ═══════════════════════════════════════════════════════════════ */
     async function _coletarTodoIndexedDB() {
@@ -573,7 +587,7 @@
             dadosPorModulo: { _todos: ls }
         };
 
-        const nomeArquivo = 'command-center-backup-completo-' + _timestampArquivo() + '.json';
+        const nomeArquivo = _nomeArquivoTimestamp('Exportacao_Completa');
         _baixarJSON(backup, nomeArquivo);
 
         let msg =
@@ -685,7 +699,7 @@
             dadosPorModulo: { _todos: ls }
         };
 
-        const nomeArquivo = 'command-center-backup-pre-restauracao-' + _timestampArquivo() + '.json';
+        const nomeArquivo = _nomeArquivoTimestamp('Backup_Pre_Restauracao');
         _baixarJSON(backup, nomeArquivo);
 
         await new Promise(r => setTimeout(r, 800));
