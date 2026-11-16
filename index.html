@@ -128,7 +128,7 @@
     </div>
 </div>
 
-<!-- POPUP de Configurações — flutuante, ancorado perto do botão ⚙️ (padrão Index.html) -->
+<!-- POPUP de Configurações — flutuante, ancorado perto do botão ⚙️ -->
 <div id="config-modal" style="position: fixed; inset: 0; display: none; z-index: 2000; pointer-events: none;">
     <div class="glass-card" style="position: absolute; bottom: 90px; left: 70px; width: 320px; border: 1px solid var(--accent); max-height: calc(100vh - 140px); overflow-y: auto; pointer-events: auto; background: rgba(10, 20, 40, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); text-align: left;">
 
@@ -628,7 +628,7 @@
 
     /* ═══════════════════════════════════════════════════════════════
      * LEITURA E VALIDAÇÃO DE ARQUIVO DE BACKUP
-     * Aceita Command Center e Management Center (compatibilidade)
+     * Aceita os quatro apps (compatibilidade total entre módulos Center Soft)
      * ═══════════════════════════════════════════════════════════════ */
     async function _lerArquivoBackup() {
         return new Promise(resolve => {
@@ -641,9 +641,9 @@
                 try {
                     const backup = JSON.parse(await file.text());
 
-                    const appOk = backup.app === 'Command Center' || backup.app === 'Management Center';
-                    if (!appOk) {
-                        alert('❌ Arquivo inválido. Não é um backup do Command/Management Center.');
+                    const appsAceitos = ['Calc Center', 'Command Center', 'Management Center', 'Agenda de Tarefas'];
+                    if (!appsAceitos.includes(backup.app)) {
+                        alert('❌ Arquivo inválido. Não é um backup compatível.');
                         resolve(null); return;
                     }
 
@@ -766,7 +766,6 @@
 
         await _fecharIframe();
 
-        // 1) localStorage
         let lsGravadas = 0;
         const falhasLS = [];
         Object.entries(plano).forEach(([k, v]) => {
@@ -778,13 +777,11 @@
             }
         });
 
-        // 2) IndexedDB
         let idbRelatorio = { bancosTotal: 0, bancosOk: 0, registrosTotal: 0, falhas: [] };
         if (idb && nomesIDB.length > 0) {
             idbRelatorio = await _restaurarIndexedDB(idb);
         }
 
-        // 3) Relatório
         let relatorio =
             '✅ Restauração completa concluída!\n\n' +
             '📦 localStorage: ' + lsGravadas + ' de ' + totalLS + ' chave(s) gravada(s)\n' +
@@ -903,7 +900,6 @@
             location.reload();
         }
     }
-
 </script>
 
 </body>
