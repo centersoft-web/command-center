@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão Financeira Global - Poupança Mensal Atualizada</title>
+    <title>Gestão Financeira Global</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -490,20 +490,15 @@
         }
 
         function getSaldoAnterior(ano, mesNome) {
-            const anoAtual = Number(ano);
             const mesIdx = months.indexOf(mesNome);
             let saldo = 0;
-            Object.keys(fullDB).map(Number).filter(Number.isFinite).sort((a,b) => a-b).forEach(y => {
-                if (y > anoAtual) return;
-                months.forEach((m, idx) => {
-                    if (y < anoAtual || (y === anoAtual && idx < mesIdx)) {
-                        ((fullDB[y] && fullDB[y][m]) || []).forEach(l => {
-                            saldo += Number.parseFloat(l.e) || 0;
-                            saldo -= Number.parseFloat(l.s) || 0;
-                        });
-                    }
+            for (let i = 0; i < mesIdx; i++) {
+                const m = months[i];
+                (fullDB[ano][m] || []).forEach(l => {
+                    saldo += parseFloat(l.e || 0);
+                    saldo -= parseFloat(l.s || 0);
                 });
-            });
+            }
             return saldo;
         }
 
@@ -680,12 +675,7 @@
 
 
         // ==================== ABA 2: GESTÃO DE INVESTIMENTOS ====================
-        let globalCDI = 10.75;
-        let globalSelic = 10.85;
-        let globalTR = 0;
-        let historicoTR = [];
-        let historicoCDI = [];
-        let historicoSelicMeta = []; 
+        let globalCDI = 10.75; 
         let taxaUSD = 0;
         let taxaEUR = 0;
         let totais = {};
@@ -694,60 +684,48 @@
             const display = document.getElementById('display-cdi');
             const dot = document.getElementById('status-dot');
             const label = document.getElementById('label-fonte');
-            const hoje = new Date();
-            const fmtBCB = dt => `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
-            const inicio10a = new Date(hoje); inicio10a.setFullYear(inicio10a.getFullYear() - 10);
+            
             try {
-                // CDI oficial: SGS 12, percentual ao dia. Mantemos histórico para capitalização diária.
-                const rCDI = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${fmtBCB(inicio10a)}&dataFinal=${fmtBCB(hoje)}`);
-                const dCDI = await rCDI.json();
-                historicoCDI = Array.isArray(dCDI) ? dCDI.map(x => ({data:x.data, valor:Number.parseFloat(x.valor)})).filter(x => Number.isFinite(x.valor)) : [];
-                if (historicoCDI.length) {
-                    const diaria = historicoCDI[historicoCDI.length - 1].valor / 100;
-                    globalCDI = (Math.pow(1 + diaria, 252) - 1) * 100;
+                const r = await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados/ultimos/1?formato=json');
+                const d = await r.json();
+                if(d && d.length > 0) {
+                    let taxaDiaria = parseFloat(d[0].valor);
+                    let taxaAnual = (Math.pow(1 + (taxaDiaria/100), 252) - 1) * 100;
+                    globalCDI = taxaAnual - 0.10; 
+                    display.innerText = globalCDI.toFixed(2) + "%";
+                    dot.className = "h-2 w-2 rounded-full bg-emerald-500 shrink-0";
+                    label.innerText = "BANCO CENTRAL (ONLINE)";
                 }
-                display.innerText = globalCDI.toFixed(2) + "%";
-                dot.className = "h-2 w-2 rounded-full bg-emerald-500 shrink-0";
-                label.innerText = "BANCO CENTRAL (ONLINE)";
             } catch (e) {
                 display.innerText = globalCDI.toFixed(2) + "%";
                 dot.className = "h-2 w-2 rounded-full bg-amber-500 shrink-0";
-                label.innerText = "BANCO CENTRAL (PARCIAL)";
+                label.innerText = "BANCO CENTRAL (OFFLINE)";
             }
-            try {
-                // Meta Selic oficial: SGS 432. É usada principalmente na regra histórica da poupança.
-                const rSelic = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json&dataInicial=${fmtBCB(inicio10a)}&dataFinal=${fmtBCB(hoje)}`);
-                const dSelic = await rSelic.json();
-                historicoSelicMeta = Array.isArray(dSelic) ? dSelic.map(x => ({data:x.data, valor:Number.parseFloat(x.valor)})).filter(x => Number.isFinite(x.valor)) : [];
-                if (historicoSelicMeta.length) globalSelic = historicoSelicMeta[historicoSelicMeta.length - 1].valor;
-            } catch (e) {}
-            try {
-                const rTR = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.226/dados?formato=json&dataInicial=${fmtBCB(inicio10a)}&dataFinal=${fmtBCB(hoje)}`);
-                const dTR = await rTR.json();
-                historicoTR = Array.isArray(dTR) ? dTR.map(x => ({data:x.data, valor:Number.parseFloat(x.valor)})).filter(x => Number.isFinite(x.valor)) : [];
-                if (historicoTR.length) globalTR = Math.max(0, historicoTR[historicoTR.length - 1].valor);
-            } catch (e) { globalTR = 0; }
+
             try {
                 const rCambio = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL');
                 const dCambio = await rCambio.json();
                 taxaUSD = parseFloat(dCambio.USDBRL.bid);
                 taxaEUR = parseFloat(dCambio.EURBRL.bid);
+                
                 document.getElementById('top-usd').innerText = `R$ ${taxaUSD.toFixed(2)}`;
                 document.getElementById('top-eur').innerText = `R$ ${taxaEUR.toFixed(2)}`;
                 document.getElementById('cot-usd').innerText = `R$ ${taxaUSD.toFixed(2)}`;
                 document.getElementById('cot-eur').innerText = `R$ ${taxaEUR.toFixed(2)}`;
             } catch (e) {
-                // Sem cotação online, não inventa taxa de câmbio. Preserva zero para evitar patrimônio fictício.
-                taxaUSD = 0; taxaEUR = 0;
+                taxaUSD = 5.00;
+                taxaEUR = 5.40;
             }
+
             processarTudo();
         }
+
         function processarTudo() {
             totais = {};
             calcRF('master', globalCDI, 1.0); 
             calcRF('mapfre', globalCDI, 1.0);
             calcRF('prev', globalCDI, 0.95); 
-            calcRFAnual('selic', globalSelic, 1.0);
+            calcRF('selic', globalCDI + 0.1, 1.0);
             calcIsento('lci', globalCDI, 0.90); 
             calcPoup();
             calcMoedaCompleta('usd', taxaUSD);
@@ -757,190 +735,61 @@
             document.getElementById('grand-total').innerText = soma.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
         }
 
-        function diasCorridosDesde(dataISO) {
-            if (!dataISO) return 0;
-            const inicio = new Date(dataISO + 'T00:00:00');
-            const hoje = new Date();
-            hoje.setHours(0,0,0,0);
-            return Math.max(0, Math.floor((hoje - inicio) / 86400000));
-        }
-        function mesesCompletosDesde(dataISO) {
-            if (!dataISO) return 0;
-            const inicio = new Date(dataISO + 'T00:00:00');
-            const hoje = new Date();
-            hoje.setHours(0,0,0,0);
-            if (inicio > hoje) return 0;
-            let meses = (hoje.getFullYear() - inicio.getFullYear()) * 12 + hoje.getMonth() - inicio.getMonth();
-            if (hoje.getDate() < inicio.getDate()) meses--;
-            return Math.max(0, meses);
-        }
-        function aliquotaIRRegressiva(dias) {
-            if (dias > 720) return 0.15;
-            if (dias > 360) return 0.175;
-            if (dias > 180) return 0.20;
-            return 0.225;
-        }
-        function parseDataBR(str) {
-            const [dd,mm,aa] = str.split('/').map(Number);
-            return new Date(aa, mm-1, dd);
-        }
-        function fatorCDIHistorico(dataISO, benchmark = 1) {
-            if (!dataISO || !historicoCDI.length) return null;
-            const inicio = new Date(dataISO + 'T00:00:00');
-            const primeira = parseDataBR(historicoCDI[0].data);
-            if (inicio < primeira) return null;
-            let fator = 1, encontrou = false;
-            for (const x of historicoCDI) {
-                const dx = parseDataBR(x.data);
-                if (dx >= inicio && dx <= new Date()) {
-                    // Para percentuais do CDI, aplica-se o benchmark sobre a taxa diária, preservando a composição.
-                    fator *= (1 + (x.valor / 100) * benchmark);
-                    encontrou = true;
-                }
-            }
-            return encontrou ? fator : null;
-        }
-        function fatorAnualAproximado(taxaAnualPct, diasCorridos) {
-            const anosCorridos = diasCorridos / 365;
-            return Math.pow(1 + taxaAnualPct / 100, anosCorridos);
-        }
-        function fatorRendaFixaPorIndice(dataISO, taxaAnualPct, bench) {
-            // CDI usa série histórica oficial quando disponível; demais índices permanecem estimativas explícitas.
-            const fatorCDI = fatorCDIHistorico(dataISO, bench);
-            return fatorCDI !== null ? fatorCDI : fatorAnualAproximado(taxaAnualPct * bench, diasCorridosDesde(dataISO));
-        }
-        function calcRF(id, taxaAnualPct, bench) {
-            const v = Number.parseFloat(document.getElementById(`v-${id}`).value) || 0;
+        function calcRF(id, cdi, bench) {
+            const v = parseFloat(document.getElementById(`v-${id}`).value) || 0;
             const d = document.getElementById(`d-${id}`).value;
-            const a = Number.parseFloat(document.getElementById(`a-${id}`).value) || 0;
+            const a = parseFloat(document.getElementById(`a-${id}`).value) || 0;
             if (v <= 0 || !d) { atualizarDisplay(id, 0); return; }
-            const diasPrincipal = diasCorridosDesde(d);
-            const brutoPrincipal = v * fatorRendaFixaPorIndice(d, taxaAnualPct, bench);
-            const lucroPrincipal = Math.max(0, brutoPrincipal - v);
-            let total = v + lucroPrincipal * (1 - aliquotaIRRegressiva(diasPrincipal));
-            const meses = mesesCompletosDesde(d);
-            for (let i = 1; i <= meses; i++) {
-                const dataAporte = dataAniversarioGenerico(d, i);
-                const ds = toISO(dataAporte);
-                const diasAporte = diasCorridosDesde(ds);
-                const bruto = a * fatorRendaFixaPorIndice(ds, taxaAnualPct, bench);
-                const lucro = Math.max(0, bruto - a);
-                total += a + lucro * (1 - aliquotaIRRegressiva(diasAporte));
-            }
-            atualizarDisplay(id, total);
-        }
-        function calcRFAnual(id, taxaAnualPct, bench) {
-            const v = Number.parseFloat(document.getElementById(`v-${id}`).value) || 0;
-            const d = document.getElementById(`d-${id}`).value;
-            const a = Number.parseFloat(document.getElementById(`a-${id}`).value) || 0;
-            if (v <= 0 || !d) { atualizarDisplay(id, 0); return; }
-            const fator = ds => fatorAnualAproximado(taxaAnualPct * bench, diasCorridosDesde(ds));
-            const diasPrincipal = diasCorridosDesde(d);
-            const brutoPrincipal = v * fator(d);
-            const lucroPrincipal = Math.max(0, brutoPrincipal - v);
-            let total = v + lucroPrincipal * (1 - aliquotaIRRegressiva(diasPrincipal));
-            const meses = mesesCompletosDesde(d);
-            for (let i = 1; i <= meses; i++) {
-                const ds = toISO(dataAniversarioGenerico(d, i));
-                const diasAporte = diasCorridosDesde(ds);
-                const bruto = a * fator(ds);
-                const lucro = Math.max(0, bruto - a);
-                total += a + lucro * (1 - aliquotaIRRegressiva(diasAporte));
-            }
-            atualizarDisplay(id, total);
-        }
-        function calcIsento(id, taxaAnualPct, bench) {
-            const v = Number.parseFloat(document.getElementById(`v-${id}`).value) || 0;
-            const d = document.getElementById(`d-${id}`).value;
-            const a = Number.parseFloat(document.getElementById(`a-${id}`).value) || 0;
-            if (v <= 0 || !d) { atualizarDisplay(id, 0); return; }
-
-            let total = v * fatorRendaFixaPorIndice(d, taxaAnualPct, bench);
-            const meses = mesesCompletosDesde(d);
-            for (let i = 1; i <= meses; i++) {
-                const dataAporte = new Date(d + 'T00:00:00');
-                dataAporte.setMonth(dataAporte.getMonth() + i);
-                const ds = `${dataAporte.getFullYear()}-${String(dataAporte.getMonth()+1).padStart(2,'0')}-${String(dataAporte.getDate()).padStart(2,'0')}`;
-                total += a * fatorRendaFixaPorIndice(ds, taxaAnualPct, bench);
-            }
-            atualizarDisplay(id, total);
+            const dias = Math.max(1, Math.ceil((new Date() - new Date(d)) / 86400000));
+            const meses = dias / 30.44;
+            const ir = dias > 720 ? 0.15 : dias > 360 ? 0.175 : dias > 180 ? 0.20 : 0.225;
+            const txD = Math.pow(((cdi * bench) / 100) + 1, 1/252) - 1;
+            const txM = Math.pow(((cdi * bench) / 100) + 1, 1/12) - 1;
+            const rendPrincipal = (v * Math.pow(1 + txD, dias)) - v;
+            const totalAportes = meses > 0 ? a * ((Math.pow(1 + txM, meses) - 1) / txM) : 0;
+            const lucroAportes = totalAportes - (a * meses);
+            const res = v + (rendPrincipal * (1 - ir)) + (a * meses) + (lucroAportes * (1 - ir));
+            atualizarDisplay(id, res);
         }
 
-        function dataAniversarioGenerico(baseISO, mesesDepois) {
-            const base = new Date(baseISO + 'T00:00:00');
-            const dia = base.getDate();
-            const alvo = new Date(base.getFullYear(), base.getMonth() + mesesDepois, 1);
-            const ultimo = new Date(alvo.getFullYear(), alvo.getMonth() + 1, 0).getDate();
-            return new Date(alvo.getFullYear(), alvo.getMonth(), Math.min(dia, ultimo));
+        function calcIsento(id, cdi, bench) {
+            const v = parseFloat(document.getElementById(`v-${id}`).value) || 0;
+            const d = document.getElementById(`d-${id}`).value;
+            const a = parseFloat(document.getElementById(`a-${id}`).value) || 0;
+            if (v <= 0 || !d) { atualizarDisplay(id, 0); return; }
+            const dias = Math.max(1, Math.ceil((new Date() - new Date(d)) / 86400000));
+            const meses = dias / 30.44;
+            const txD = Math.pow(((cdi * bench) / 100) + 1, 1/252) - 1;
+            const txM = Math.pow(((cdi * bench) / 100) + 1, 1/12) - 1;
+            const principalFinal = v * Math.pow(1 + txD, dias);
+            const aportesFinal = meses > 0 ? a * ((Math.pow(1 + txM, meses) - 1) / txM) : 0;
+            atualizarDisplay(id, principalFinal + aportesFinal);
         }
-        function toISO(dt) {
-            return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-        }
-        function valorSerieNaData(historico, data, fallback) {
-            let melhor = null;
-            for (const x of historico) {
-                const dx = parseDataBR(x.data);
-                if (dx <= data && (!melhor || dx > melhor.dataObj)) melhor = {dataObj:dx, valor:x.valor};
-            }
-            return melhor ? melhor.valor : fallback;
-        }
-        function dataAniversario(baseISO, mesesDepois) {
-            const base = new Date(baseISO + 'T00:00:00');
-            const diaOriginal = base.getDate();
-            const alvo = new Date(base.getFullYear(), base.getMonth() + mesesDepois, 1);
-            const ultimoDia = new Date(alvo.getFullYear(), alvo.getMonth() + 1, 0).getDate();
-            // Regra oficial: aniversários 29, 30 e 31 são tratados como dia 1 do mês seguinte.
-            if (diaOriginal >= 29) return new Date(alvo.getFullYear(), alvo.getMonth() + 1, 1);
-            return new Date(alvo.getFullYear(), alvo.getMonth(), Math.min(diaOriginal, ultimoDia));
-        }
-        function trParaData(data) {
-            if (!historicoTR.length) return globalTR;
-            const [dia, mes, ano] = [data.getDate(), data.getMonth()+1, data.getFullYear()];
-            const chave = `${String(dia).padStart(2,'0')}/${String(mes).padStart(2,'0')}/${ano}`;
-            const exata = historicoTR.find(x => x.data === chave);
-            if (exata) return Math.max(0, exata.valor);
-            // Na ausência de publicação exatamente na data, usa a última observação anterior disponível.
-            let melhor = null;
-            for (const x of historicoTR) {
-                const [dd,mm,aa] = x.data.split('/').map(Number);
-                const dx = new Date(aa,mm-1,dd);
-                if (dx <= data && (!melhor || dx > melhor.dataObj)) melhor = {dataObj:dx, valor:x.valor};
-            }
-            return melhor ? Math.max(0, melhor.valor) : Math.max(0, globalTR);
-        }
+
         function calcPoup() {
-            const v = Number.parseFloat(document.getElementById('v-poup').value) || 0;
+            const v = parseFloat(document.getElementById('v-poup').value) || 0;
             const d = document.getElementById('d-poup').value;
-            const a = Number.parseFloat(document.getElementById('a-poup').value) || 0;
+            const a = parseFloat(document.getElementById('a-poup').value) || 0;
             if (v <= 0 || !d) { atualizarDisplay('poup', 0); return; }
-            const meses = mesesCompletosDesde(d);
-            // Cada depósito é tratado como um lote, pois ele só rende após completar seu próprio aniversário.
-            const lotes = [{valor:v, data:d}];
-            for (let i=1; i<=meses; i++) lotes.push({valor:a, data:toISO(dataAniversarioGenerico(d, i))});
-            let total = 0;
-            for (const lote of lotes) {
-                if (!(lote.valor > 0)) continue;
-                let saldo = lote.valor;
-                const periodos = mesesCompletosDesde(lote.data);
-                for (let p=0; p<periodos; p++) {
-                    const inicioPeriodo = dataAniversario(lote.data, p);
-                    const trPct = valorSerieNaData(historicoTR, inicioPeriodo, globalTR);
-                    const selicMeta = valorSerieNaData(historicoSelicMeta, inicioPeriodo, globalSelic);
-                    const adicional = selicMeta > 8.5 ? 0.005 : Math.pow(1 + (selicMeta * 0.70 / 100), 1/12) - 1;
-                    const taxaPeriodo = (1 + trPct / 100) * (1 + adicional) - 1;
-                    saldo *= (1 + taxaPeriodo);
-                }
-                total += saldo;
-            }
-            atualizarDisplay('poup', total);
+            const meses = (new Date() - new Date(d)) / 2628000000;
+            let taxaPoup = globalCDI > 8.5 ? 0.005 : (globalCDI * 0.70 / 12 / 100);
+            const principalFinal = v * Math.pow(1 + taxaPoup, meses);
+            const aportesFinal = meses > 0 ? a * ((Math.pow(1 + taxaPoup, meses) - 1) / taxaPoup) : 0;
+            atualizarDisplay('poup', principalFinal + aportesFinal);
         }
+
         function calcMoedaCompleta(id, taxa) {
-            const v = Number.parseFloat(document.getElementById(`v-${id}`).value) || 0;
+            const v = parseFloat(document.getElementById(`v-${id}`).value) || 0;
             const d = document.getElementById(`d-${id}`).value;
-            const a = Number.parseFloat(document.getElementById(`a-${id}`).value) || 0;
-            if (v <= 0 || !(taxa > 0)) { atualizarDisplay(id, 0); return; }
-            const meses = d ? mesesCompletosDesde(d) : 0;
-            atualizarDisplay(id, (v + a * meses) * taxa);
+            const a = parseFloat(document.getElementById(`a-${id}`).value) || 0;
+            if (v <= 0) { atualizarDisplay(id, 0); return; }
+            let totalMoeda = v;
+            if (d) {
+                const meses = Math.max(0, (new Date() - new Date(d)) / 2628000000);
+                totalMoeda += (a * meses);
+            }
+            const resBRL = totalMoeda * taxa;
+            atualizarDisplay(id, resBRL);
         }
 
         function atualizarDisplay(id, valor) {
@@ -986,7 +835,7 @@
             const agora = new Date();
             const dataFmt = agora.toLocaleDateString('pt-BR').replace(/\//g, '-');
             const horaFmt = agora.getHours() + 'h' + agora.getMinutes().toString().padStart(2, '0');
-            const nomeArquivo = `Gestão_de_Investimentos_${agora.getFullYear()}_${dataFmt}_${horaFmt}.json`;
+            const nomeArquivo = `Gestão_de_Investimentos_2006_${dataFmt}_${horaFmt}.json`;
             const a = document.createElement('a');
             a.href = URL.createObjectURL(new Blob([data], {type: "application/json"}));
             a.download = nomeArquivo;
