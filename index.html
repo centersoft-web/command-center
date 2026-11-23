@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#060b1a">
+    <meta name="description"
+          content="Sistema patrimonial modular para gestão financeira, imobiliária, 
+        contratual e patrimonial, desenvolvido para operação local diretamente no navegador..">
     <title>Command Center by Center Soft Inc.®</title>
     <link rel="icon" href="icon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="icon.ico" type="image/x-icon">
@@ -117,6 +120,10 @@
     </style>
 </head>
 <body>
+<main class="card">
+  <h1>ImgForge</h1>
+  <p class="subtitle">Sistema patrimonial modular para gestão financeira, imobiliária, 
+      contratual e patrimonial, desenvolvido para operação local diretamente no navegador..</p>
 
 <div class="fundo-background"></div>
 
@@ -905,7 +912,9 @@
 </script>
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
+  navigator.serviceWorker.register("/command-center/sw.js", {
+    scope: "/command-center/"
+  });
 }
 </script>
 </body>
